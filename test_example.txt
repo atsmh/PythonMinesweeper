@@ -1,0 +1,44 @@
+"""
+Unittest code vor mypy's statische Testanalyse
+"""
+
+import unittest
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../source')))
+
+from source.main import Board
+
+class TestBoard(unittest.TestCase):
+    
+    def test_board_creation(self):
+        board = Board(dim_size=5, num_bombs=5)
+        self.assertEqual(board.dim_size, 5)
+        self.assertEqual(board.num_bombs, 5)
+        self.assertEqual(len(board.board), 5)
+        self.assertTrue(all(len(row) == 5 for row in board.board))
+
+    def test_bomb_count(self):
+        board = Board(dim_size=5, num_bombs=5)
+        bomb_count = sum(row.count('*') for row in board.board)
+        self.assertEqual(bomb_count, 5)
+
+    def test_dig_returns_false_on_bomb(self):
+        board = Board(dim_size=3, num_bombs=1)
+        # Platziere eine Bombe manuell
+        board.board = [[0, 0, 0], [0, '*', 0], [0, 0, 0]]
+        board.assign_values_to_board()
+        result = board.dig(1, 1)
+        self.assertFalse(result)
+
+    def test_dig_returns_true_on_safe(self):
+        board = Board(dim_size=3, num_bombs=1)
+        # Platziere eine Bombe manuell
+        board.board = [[0, 0, 0], [0, '*', 0], [0, 0, 0]]
+        board.assign_values_to_board()
+        result = board.dig(0, 0)
+        self.assertTrue(result)
+
+if __name__ == '__main__':
+    unittest.main()
